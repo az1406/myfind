@@ -38,15 +38,17 @@ int main(int argc, char *argv[]) {
 
     int status = 0;
     pid_t wPID;
+    int count=0;
 
     // Kill zombie processes.
     while ((wPID = wait(&status)) > 0) {
         if (WIFEXITED(status)) {
-            cout << "Child " << wPID << " successfully exited with status " << WEXITSTATUS(status) << "." << endl;
+            count++;
         } else {
             cout << "Child " << wPID << " not terminated correctly." << endl;
         }
     }
+    cout<<count<<" processes completed successfully "<<endl;
 
     delete[] pIDs;
     exit(EXIT_SUCCESS);
