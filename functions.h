@@ -1,5 +1,8 @@
 using namespace std;
 
+// Function to parse command-line arguments
+int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns);
+
 // Gibt die gefundene Datei aus.
 void printFile(pid_t pID, const string &fileName, const string &absPath);
 

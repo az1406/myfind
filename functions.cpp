@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <dirent.h>
+#include <cassert>
 #include <cerrno>
 #include <cstring>
 #include <cctype>
@@ -17,6 +18,38 @@ void printFile(pid_t pID, const string &fileName, const string &absPath) {
     cout << pID << ": " << fileName << ": " << absPath << endl;
 }
 
+int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
+    int c;
+    
+    // Logic for the arguments -R and -i
+    while ((c = getopt(argc, argv, "Ri")) != -1) {
+        switch (c) {
+            case 'R':
+                if (rec) {
+                    cerr << "Multiple flags not allowed" << endl;
+                    err = 1;
+                } else {
+                    rec = 1;
+                }
+                break;
+            case 'i':
+                if (caseIns) {
+                    cerr << "Multiple flags not allowed" << endl;
+                    err = 1;
+                } else {
+                    caseIns = 1;
+                }
+                break;
+            case '?':
+                err = 1;
+                break;
+            default:
+                assert(false);
+        }
+    }
+
+    return optind; // Return the index of the first non-option argument
+}
 string getAbsPath(const string &path) {
     char *realPath = realpath(path.c_str(), nullptr);
     string result = realPath ? string(realPath) : string();
