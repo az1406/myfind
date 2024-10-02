@@ -21,14 +21,14 @@ void printFile(pid_t pID, const string &fileName, const string &absPath) {
 
 // Prints how myfind should be used, with specific messages for different error cases.
 void printUsage(const string &programName, int errorCode) {
-    cerr << "Usage: " << programName << " [-R] [-i] searchpath filename 1 [filename2] ... [filename n]" << endl;
+    
 
     switch (errorCode) {
         case 1:
             cerr << "Error: Invalid option for arguments." << endl;
             break;
         case 2:
-            cerr << "Error: Too many arguments provided." << endl;
+            cerr << "Error: Too many arguments given." << endl;
             break;
         case 3:
             cerr << "Error: No search path provided!" << endl;
@@ -39,13 +39,12 @@ void printUsage(const string &programName, int errorCode) {
         case 5:
             cerr << "Error: No filenames provided for search." << endl;
             break;
-        case 6:
-            cerr << "Error: Invalid filename format." << endl;
-            break;
         default:
             cerr << "An unknown error occurred." << endl;
             break;
     }
+
+    cerr << "Usage: " << programName << " [-R] [-i] searchpath filename 1 [filename2] ... [filename n]" << endl;
 
     exit(EXIT_FAILURE);
 }

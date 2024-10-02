@@ -16,10 +16,10 @@ int main(int argc, char *argv[]) {
     int opt = parseArguments(argc, argv, err, rec, caseIns);
 
     if (err) {  // If an error occurred during argument parsing
-        printUsage(programName, err); // Print the error message based on error code
+        printUsage(programName, 1); 
     }
 
-    // Check for too many  arguments
+    // Check if too many options (-R and -i) were given
     int optionCount = (rec ? 1 : 0) + (caseIns ? 1 : 0); // Count the options
     if (optionCount > 2) {
         printUsage(programName, 2); // Error: Too many options
@@ -47,12 +47,7 @@ int main(int argc, char *argv[]) {
     pid_t *pIDs = new pid_t[argc - opt];
     int i = 0;
 
-    // Fork processes to search for each filename provided
     while (opt < argc) {
-        // Validate filename format (ensure it's not empty or an option)
-        if (strlen(argv[opt]) == 0 || argv[opt][0] == '-') {
-            printUsage(programName, 6); // Invalid filename format
-        }
         pIDs[i++] = forkSearch(dirName, argv[opt++], rec, caseIns);
     }
 
