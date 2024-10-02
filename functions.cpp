@@ -18,7 +18,8 @@ using namespace std;
 void printFile(pid_t pID, const string &fileName, const string &absPath) {
     cout << pID << ": " << fileName << ": " << absPath << endl;
 }
-// Gibt aus, wie myfind verwendet werden sollte.
+
+// Prints how myfind should be used.
 void printUsage(const string &programName) {
     cerr << "Usage: " << programName << " [-R] [-i] searchpath filename 1 [filename2] ... [filename n]" << endl;
     exit(EXIT_FAILURE);
@@ -56,6 +57,7 @@ int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
 
     return optind; // Return the index of the first non-option argument
 }
+
 string getAbsPath(const string &path) {
     char *realPath = realpath(path.c_str(), nullptr);
     string result = realPath ? string(realPath) : string();
@@ -136,11 +138,11 @@ pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseI
     return pID;
 }
 
-void kill (){
+void kill() {
     int status = 0;
     pid_t wPID;
-    int count=0;
-    
+    int count = 0;
+
     // Kill zombie processes.
     while ((wPID = wait(&status)) > 0) {
         if (WIFEXITED(status)) {
@@ -149,5 +151,5 @@ void kill (){
             cout << "Child " << wPID << " not terminated correctly." << endl;
         }
     }
-    cout<<count<<" processes completed successfully "<<endl;
+    cout << count << " processes completed successfully " << endl;
 }
