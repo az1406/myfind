@@ -19,6 +19,36 @@ void printFile(pid_t pID, const string &fileName, const string &absPath) {
     cout << pID << ": " << fileName << ": " << absPath << endl;
 }
 
+void printUsageErrors(int argc, char *argv[], int err, int opt, string programName, int rec, int caseIns){
+    if (err) {  // If an error occurred during argument parsing
+        printUsage(programName, 1); 
+    }
+
+    // Check if too many options (-R and -i) were given
+    int optionCount = (rec ? 1 : 0) + (caseIns ? 1 : 0); // Count the options
+    if (optionCount > 2) {
+        printUsage(programName, 2); // Error: Too many options
+    }
+
+    // Check if no search path is provided
+    if (opt >= argc) {
+        printUsage(programName, 3); // No search path provided
+    }
+
+    string dirName = argv[opt]; // Get the directory name from arguments
+    opt++;
+
+    // Check if the provided search path is valid
+    if (getAbsPath(dirName).empty()) {
+        printUsage(programName, 4); // Invalid search path
+    }
+
+    // Check if no filenames are provided for search
+    if (argc < opt + 1) {
+        printUsage(programName, 5); // No filenames provided for search
+    }
+}
+
 // Prints how myfind should be used, with specific messages for different error cases.
 void printUsage(const string &programName, int errorCode) {
     

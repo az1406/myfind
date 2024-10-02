@@ -15,33 +15,10 @@ int main(int argc, char *argv[]) {
     // Parse command-line arguments
     int opt = parseArguments(argc, argv, err, rec, caseIns);
 
-    if (err) {  // If an error occurred during argument parsing
-        printUsage(programName, 1); 
-    }
-
-    // Check if too many options (-R and -i) were given
-    int optionCount = (rec ? 1 : 0) + (caseIns ? 1 : 0); // Count the options
-    if (optionCount > 2) {
-        printUsage(programName, 2); // Error: Too many options
-    }
-
-    // Check if no search path is provided
-    if (opt >= argc) {
-        printUsage(programName, 3); // No search path provided
-    }
-
+    printUsageErrors(argc, argv, err, opt, programName, rec, caseIns);
+        
     string dirName = argv[opt]; // Get the directory name from arguments
     opt++;
-
-    // Check if the provided search path is valid
-    if (getAbsPath(dirName).empty()) {
-        printUsage(programName, 4); // Invalid search path
-    }
-
-    // Check if no filenames are provided for search
-    if (argc < opt + 1) {
-        printUsage(programName, 5); // No filenames provided for search
-    }
 
     // Create an array of process IDs
     pid_t *pIDs = new pid_t[argc - opt];
