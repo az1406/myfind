@@ -109,7 +109,7 @@ string buildNewPath(const string &oldPath, const string &fileName) {
     return oldPath + "/" + fileName;
 }
 
-void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIns) {
+void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIns, bool &fileFound) {
     DIR *directory;
     struct dirent *entry;
 
@@ -126,7 +126,7 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
                 if (rec) {
                     if (fileName != "." && fileName != "..") {
                         string newPath = buildNewPath(dir, fileName);
-                        searchFile(newPath, toSearch, rec, caseIns);
+                        searchFile(newPath, toSearch, rec, caseIns, fileFound);
                     }
                 }
                 break;
@@ -136,6 +136,7 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
                     string combinedName = buildNewPath(dir, fileName);
                     string absPath = getAbsPath(combinedName);
                     printFile(getpid(), toSearch, absPath);
+                    fileFound = true; // Mark the file as found
                 }
                 break;
             }
@@ -149,9 +150,16 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
 
 pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseIns) {
     pid_t pID = fork();
+    bool fileFound = false;  // Initialize fileFound as false
 
-    if (pID == 0) {
-        searchFile(dir, toSearch, rec, caseIns);
+    if (pID == 0) {  // Child process
+        searchFile(dir, toSearch, rec, caseIns, fileFound);
+
+        // If file not found after the search, print the error message
+        if (!fileFound) {
+            cerr << "Error: File '" << toSearch << "' not found." << endl;
+        }
+
         exit(EXIT_SUCCESS);
     } else if (pID == -1) {
         cerr << "Unable to start child" << endl;

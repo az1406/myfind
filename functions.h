@@ -19,7 +19,7 @@ bool cmpFileNames(const string &str1, const string &str2, bool caseIns);
 string buildNewPath(const string &oldPath, const string &fileName);
 
 // Searches for a file in dir. If rec is assigned, then also searches recursively in the subfolders.
-void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIns);
+void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIns, bool &fileFound);
 
 // Searches for a file in a new process.
 pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseIns);
