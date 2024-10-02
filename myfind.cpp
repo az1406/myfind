@@ -8,7 +8,7 @@
 
 using namespace std;
 
-// Gibt aus, wie myfind verwendet werden sollte.
+// Outputs how to use myfind.
 void printUsage(const string &programName) {
     cerr << "Usage: " << programName << " [-R] [-i] searchpath filename 1 [filename2] ... [filename n]" << endl;
     exit(EXIT_FAILURE);
@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         printUsage(programName);
     }
 
-    // Wenn eine falsche Zahl an Argumenten eingegeben wird.
+    // If an incorrect number of arguments is entered.
     if (argc < opt + 2) {
         cerr << "False number of args" << endl;
         printUsage(programName);
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     int status = 0;
     pid_t wPID;
 
-    // Zombie-Processe killen.
+    // Kill zombie processes.
     while ((wPID = wait(&status)) > 0) {
         if (WIFEXITED(status)) {
             cout << "Child " << wPID << " successfully exited with status " << WEXITSTATUS(status) << "." << endl;
