@@ -19,20 +19,14 @@ void printFile(pid_t pID, const string &fileName, const string &absPath) {
     cout << pID << ": " << fileName << ": " << absPath << endl;
 }
 
-void printUsageErrors(int argc, char *argv[], int err, int opt, string programName, int rec, int caseIns){
+void printUsageErrors(int argc, char *argv[], int err, int opt, string programName, int recursive, int case_insensitive){
     if (err) {  // If an error occurred during argument parsing
         printUsage(programName, 1); 
     }
 
-    // Check if too many options (-R and -i) were given
-    int optionCount = (rec ? 1 : 0) + (caseIns ? 1 : 0); // Count the options
-    if (optionCount > 2) {
-        printUsage(programName, 2); // Error: Too many options
-    }
-
     // Check if no search path is provided
     if (opt >= argc) {
-        printUsage(programName, 3); // No search path provided
+        printUsage(programName, 2); // No search path provided
     }
 
     string dirName = argv[opt]; // Get the directory name from arguments
@@ -40,12 +34,12 @@ void printUsageErrors(int argc, char *argv[], int err, int opt, string programNa
 
     // Check if the provided search path is valid
     if (getPath(dirName).empty()) {
-        printUsage(programName, 4); // Invalid search path
+        printUsage(programName, 3); // Invalid search path
     }
 
     // Check if no filenames are provided for search
     if (argc < opt + 1) {
-        printUsage(programName, 5); // No filenames provided for search
+        printUsage(programName, 4); // No filenames provided for search
     }
 }
 
@@ -56,15 +50,12 @@ void printUsage(const string &programName, int errorCode) {
             cerr << "Error: Invalid option for arguments." << endl;
             break;
         case 2:
-            cerr << "Error: Too many arguments given." << endl;
-            break;
-        case 3:
             cerr << "Error: No search path provided!" << endl;
             break;
-        case 4:
+        case 3:
             cerr << "Error: Invalid search path." << endl;
             break;
-        case 5:
+        case 4:
             cerr << "Error: No filenames provided for search." << endl;
             break;
         default:
@@ -78,23 +69,23 @@ void printUsage(const string &programName, int errorCode) {
 }
 
 
-int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
+int parseArguments(int argc, char *argv[], int &err, int &recursive, int &case_insensitive) {
     int c;
     
     while ((c = getopt(argc, argv, "Ri")) != -1) {
         switch (c) {
             case 'R':
-                if (rec) {
+                if (recursive) {
                     err = 1;
                 } else {
-                    rec = 1;
+                    recursive = 1;
                 }
                 break;
             case 'i':
-                if (caseIns) {
+                if (case_insensitive) {
                     err = 1;
                 } else {
-                    caseIns = 1;
+                    case_insensitive = 1;
                 }
                 break;
             case '?':
@@ -115,22 +106,27 @@ string getPath(const string &path) {
     return result;
 }
 
-bool compareFiles(const string &str1, const string &str2, bool caseIns) {
+bool compareFiles(const string &str1, const string &str2, bool case_insensitive) {
     if (str1.size() != str2.size()) {
         return false;
     }
-    for (size_t i = 0; i < str1.size(); ++i) {
-        char c1 = caseIns ? tolower(str1[i]) : str1[i];
-        char c2 = caseIns ? tolower(str2[i]) : str2[i];
+
+    size_t i = 0;
+    while (i < str1.size()) {
+        char c1 = case_insensitive ? tolower(str1[i]) : str1[i];
+        char c2 = case_insensitive ? tolower(str2[i]) : str2[i];
 
         if (c1 != c2) {
             return false;
         }
+
+        i++;
     }
+
     return true;
 }
 
-void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIns, bool &fileFound) {
+void searchFile(const string &dir, const string &toSearch, bool recursive, bool case_insensitive, bool &fileFound) {
     DIR *directory;
     struct dirent *entry;
 
@@ -144,16 +140,16 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
 
         switch (entry->d_type) {
             case DT_DIR: {
-                if (rec) {
+                if (recursive) {
                     if (fileName != "." && fileName != "..") {
                         string newPath =  (dir + "/" + fileName);
-                        searchFile(newPath, toSearch, rec, caseIns, fileFound);
+                        searchFile(newPath, toSearch, recursive, case_insensitive, fileFound);
                     }
                 }
                 break;
             }
             case DT_REG: {
-                if (compareFiles(fileName, toSearch, caseIns)) {
+                if (compareFiles(fileName, toSearch, case_insensitive)) {
                     string combinedName = (dir + "/" + fileName);
                     string absPath = getPath(combinedName);
                     printFile(getpid(), toSearch, absPath);
@@ -168,21 +164,21 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
     while ((closedir(directory) == -1 && errno == EINTR));
 }
 
-pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseIns) {
+pid_t forkSearch(const string &dir, const string &toSearch, bool recursive, bool case_insensitive) {
     pid_t pID = fork();
     bool fileFound = false; 
 
     if (pID == 0) {  // Child process
-        searchFile(dir, toSearch, rec, caseIns, fileFound);
+        searchFile(dir, toSearch, recursive, case_insensitive, fileFound);
 
-        // If file not found after the search, print the error message
+        // If file not found after the search
         if (!fileFound) {
-            cerr << "Error: File '" << toSearch << "' not found." << endl;
+            cerr << "\033[31m" << getpid() << ": File '" << toSearch << "' not found.\033[0m" << endl;
         }
 
         exit(EXIT_SUCCESS);
-    } else if (pID == -1) {
-        cerr << "Unable to start child" << endl;
+    } else if (pID < 0) {
+        cerr << "Failure while starting child process" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -190,9 +186,8 @@ pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseI
 }
 
 void kill() {
-    int status = 0;
+    int status = 0, count = 0;
     pid_t wPID;
-    int count = 0;
 
     while ((wPID = wait(&status)) > 0) {
         if (WIFEXITED(status)) {
