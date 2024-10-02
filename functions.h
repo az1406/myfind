@@ -9,17 +9,14 @@ void printUsageErrors(int argc, char *argv[], int err, int opt, string programNa
 // Printing
 void printUsage(const string &programName, int errorCode);
 
+// Returns the absolute path of a file.
+string getPath(const string &path);
+
 // Prints the found file.
 void printFile(pid_t pID, const string &fileName, const string &absPath);
 
-// Returns the absolute path of a file.
-string getAbsPath(const string &path);
-
 // Two strings are compared depending on caseIns.
-bool cmpFileNames(const string &str1, const string &str2, bool caseIns);
-
-// Combines oldPath and fileName.
-string buildNewPath(const string &oldPath, const string &fileName);
+bool compareFiles(const string &str1, const string &str2, bool caseIns);
 
 // Searches for a file in dir. If rec is assigned, then also searches recursively in the subfolders.
 void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIns, bool &fileFound);

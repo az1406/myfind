@@ -39,7 +39,7 @@ void printUsageErrors(int argc, char *argv[], int err, int opt, string programNa
     opt++;
 
     // Check if the provided search path is valid
-    if (getAbsPath(dirName).empty()) {
+    if (getPath(dirName).empty()) {
         printUsage(programName, 4); // Invalid search path
     }
 
@@ -108,18 +108,17 @@ int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
     return optind; // Return the index of the first non-option argument
 }
 
-string getAbsPath(const string &path) {
+string getPath(const string &path) {
     char *realPath = realpath(path.c_str(), nullptr);
     string result = realPath ? string(realPath) : string();
     free(realPath);
     return result;
 }
 
-bool cmpFileNames(const string &str1, const string &str2, bool caseIns) {
+bool compareFiles(const string &str1, const string &str2, bool caseIns) {
     if (str1.size() != str2.size()) {
         return false;
     }
-
     for (size_t i = 0; i < str1.size(); ++i) {
         char c1 = caseIns ? tolower(str1[i]) : str1[i];
         char c2 = caseIns ? tolower(str2[i]) : str2[i];
@@ -128,12 +127,7 @@ bool cmpFileNames(const string &str1, const string &str2, bool caseIns) {
             return false;
         }
     }
-
     return true;
-}
-
-string buildNewPath(const string &oldPath, const string &fileName) {
-    return oldPath + "/" + fileName;
 }
 
 void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIns, bool &fileFound) {
@@ -152,16 +146,16 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
             case DT_DIR: {
                 if (rec) {
                     if (fileName != "." && fileName != "..") {
-                        string newPath = buildNewPath(dir, fileName);
+                        string newPath =  (dir + "/" + fileName);
                         searchFile(newPath, toSearch, rec, caseIns, fileFound);
                     }
                 }
                 break;
             }
             case DT_REG: {
-                if (cmpFileNames(fileName, toSearch, caseIns)) {
-                    string combinedName = buildNewPath(dir, fileName);
-                    string absPath = getAbsPath(combinedName);
+                if (compareFiles(fileName, toSearch, caseIns)) {
+                    string combinedName = (dir + "/" + fileName);
+                    string absPath = getPath(combinedName);
                     printFile(getpid(), toSearch, absPath);
                     fileFound = true;
                 }
@@ -171,7 +165,6 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
                 break;
         }
     }
-
     while ((closedir(directory) == -1 && errno == EINTR));
 }
 
