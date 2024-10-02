@@ -1,7 +1,5 @@
 using namespace std;
 
-
-
 // Function to parse command-line arguments
 int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns);
 
@@ -25,3 +23,6 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
 
 // In einem neuen Prozess einer Datei suchen.
 pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseIns);
+
+//kill zombie processes
+void kill ();

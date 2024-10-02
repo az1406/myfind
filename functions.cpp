@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <sys/wait.h>
 #include <dirent.h>
 #include <cassert>
 #include <cerrno>
@@ -135,3 +136,18 @@ pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseI
     return pID;
 }
 
+void kill (){
+    int status = 0;
+    pid_t wPID;
+    int count=0;
+    
+    // Kill zombie processes.
+    while ((wPID = wait(&status)) > 0) {
+        if (WIFEXITED(status)) {
+            count++;
+        } else {
+            cout << "Child " << wPID << " not terminated correctly." << endl;
+        }
+    }
+    cout<<count<<" processes completed successfully "<<endl;
+}

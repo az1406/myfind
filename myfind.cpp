@@ -36,19 +36,7 @@ int main(int argc, char *argv[]) {
         pIDs[i++] = forkSearch(dirName, argv[opt++], rec, caseIns);
     }
 
-    int status = 0;
-    pid_t wPID;
-    int count=0;
-
-    // Kill zombie processes.
-    while ((wPID = wait(&status)) > 0) {
-        if (WIFEXITED(status)) {
-            count++;
-        } else {
-            cout << "Child " << wPID << " not terminated correctly." << endl;
-        }
-    }
-    cout<<count<<" processes completed successfully "<<endl;
+    kill();
 
     delete[] pIDs;
     exit(EXIT_SUCCESS);
