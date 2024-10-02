@@ -49,10 +49,8 @@ void printUsageErrors(int argc, char *argv[], int err, int opt, string programNa
     }
 }
 
-// Prints how myfind should be used, with specific messages for different error cases.
 void printUsage(const string &programName, int errorCode) {
     
-
     switch (errorCode) {
         case 1:
             cerr << "Error: Invalid option for arguments." << endl;
@@ -83,7 +81,6 @@ void printUsage(const string &programName, int errorCode) {
 int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
     int c;
     
-    // Logic for the arguments -R and -i
     while ((c = getopt(argc, argv, "Ri")) != -1) {
         switch (c) {
             case 'R':
@@ -114,7 +111,7 @@ int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
 string getAbsPath(const string &path) {
     char *realPath = realpath(path.c_str(), nullptr);
     string result = realPath ? string(realPath) : string();
-    free(realPath); // Remember to free the memory allocated by realpath
+    free(realPath);
     return result;
 }
 
@@ -166,7 +163,7 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
                     string combinedName = buildNewPath(dir, fileName);
                     string absPath = getAbsPath(combinedName);
                     printFile(getpid(), toSearch, absPath);
-                    fileFound = true; // Mark the file as found
+                    fileFound = true;
                 }
                 break;
             }
@@ -180,7 +177,7 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
 
 pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseIns) {
     pid_t pID = fork();
-    bool fileFound = false;  // Initialize fileFound as false
+    bool fileFound = false; 
 
     if (pID == 0) {  // Child process
         searchFile(dir, toSearch, rec, caseIns, fileFound);
@@ -204,7 +201,6 @@ void kill() {
     pid_t wPID;
     int count = 0;
 
-    // Kill zombie processes.
     while ((wPID = wait(&status)) > 0) {
         if (WIFEXITED(status)) {
             count++;

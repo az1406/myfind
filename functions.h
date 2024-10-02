@@ -3,6 +3,7 @@ using namespace std;
 // Function to parse command-line arguments
 int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns);
 
+// Check for errors
 void printUsageErrors(int argc, char *argv[], int err, int opt, string programName, int rec, int caseIns);
 
 // Printing

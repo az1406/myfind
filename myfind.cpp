@@ -12,7 +12,6 @@ int main(int argc, char *argv[]) {
     int err = 0, rec = 0, caseIns = 0;
     string programName = argv[0];
 
-    // Parse command-line arguments
     int opt = parseArguments(argc, argv, err, rec, caseIns);
 
     printUsageErrors(argc, argv, err, opt, programName, rec, caseIns);
@@ -32,5 +31,5 @@ int main(int argc, char *argv[]) {
     kill();
 
     delete[] pIDs; // Clean up dynamically allocated array
-    exit(EXIT_SUCCESS); // Exit the program successfully
+    exit(EXIT_SUCCESS);
 }
