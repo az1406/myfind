@@ -17,7 +17,8 @@ using namespace std;
 void printFile(pid_t pID, const string &fileName, const string &absPath) {
     cout << pID << ": " << fileName << ": " << absPath << endl;
 }
-// Gibt aus, wie myfind verwendet werden sollte.
+
+// Outputs how to use myfind.
 void printUsage(const string &programName) {
     cerr << "Usage: " << programName << " [-R] [-i] searchpath filename 1 [filename2] ... [filename n]" << endl;
     exit(EXIT_FAILURE);
@@ -55,6 +56,7 @@ int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
 
     return optind; // Return the index of the first non-option argument
 }
+
 string getAbsPath(const string &path) {
     char *realPath = realpath(path.c_str(), nullptr);
     string result = realPath ? string(realPath) : string();
@@ -83,6 +85,7 @@ string buildNewPath(const string &oldPath, const string &fileName) {
     return oldPath + "/" + fileName;
 }
 
+// Searches for a file in dir. If rec is assigned, then search recursively in the lower folders.
 void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIns) {
     DIR *directory;
     struct dirent *entry;
@@ -121,6 +124,7 @@ void searchFile(const string &dir, const string &toSearch, bool rec, bool caseIn
     while ((closedir(directory) == -1 && errno == EINTR));
 }
 
+// Search for a file in a new process.
 pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseIns) {
     pid_t pID = fork();
 
@@ -134,4 +138,3 @@ pid_t forkSearch(const string &dir, const string &toSearch, bool rec, bool caseI
 
     return pID;
 }
-
