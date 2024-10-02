@@ -19,11 +19,37 @@ void printFile(pid_t pID, const string &fileName, const string &absPath) {
     cout << pID << ": " << fileName << ": " << absPath << endl;
 }
 
-// Prints how myfind should be used.
-void printUsage(const string &programName) {
+// Prints how myfind should be used, with specific messages for different error cases.
+void printUsage(const string &programName, int errorCode) {
     cerr << "Usage: " << programName << " [-R] [-i] searchpath filename 1 [filename2] ... [filename n]" << endl;
+
+    switch (errorCode) {
+        case 1:
+            cerr << "Error: Invalid option for arguments." << endl;
+            break;
+        case 2:
+            cerr << "Error: Too many arguments provided." << endl;
+            break;
+        case 3:
+            cerr << "Error: No search path provided!" << endl;
+            break;
+        case 4:
+            cerr << "Error: Invalid search path." << endl;
+            break;
+        case 5:
+            cerr << "Error: No filenames provided for search." << endl;
+            break;
+        case 6:
+            cerr << "Error: Invalid filename format." << endl;
+            break;
+        default:
+            cerr << "An unknown error occurred." << endl;
+            break;
+    }
+
     exit(EXIT_FAILURE);
 }
+
 
 int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
     int c;
@@ -33,7 +59,6 @@ int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
         switch (c) {
             case 'R':
                 if (rec) {
-                    cerr << "Multiple flags not allowed" << endl;
                     err = 1;
                 } else {
                     rec = 1;
@@ -41,7 +66,6 @@ int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
                 break;
             case 'i':
                 if (caseIns) {
-                    cerr << "Multiple flags not allowed" << endl;
                     err = 1;
                 } else {
                     caseIns = 1;

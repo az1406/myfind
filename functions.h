@@ -4,7 +4,7 @@ using namespace std;
 int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns);
 
 // Printing
-void printUsage(const string &programName);
+void printUsage(const string &programName, int errorCode);
 
 // Prints the found file.
 void printFile(pid_t pID, const string &fileName, const string &absPath);
