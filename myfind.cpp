@@ -8,16 +8,6 @@
 
 using namespace std;
 
-<<<<<<< HEAD
-// Outputs how to use myfind.
-void printUsage(const string &programName) {
-    cerr << "Usage: " << programName << " [-R] [-i] searchpath filename 1 [filename2] ... [filename n]" << endl;
-    exit(EXIT_FAILURE);
-}
-=======
-
->>>>>>> b8b6c73 (change)
-
 int main(int argc, char *argv[]) {
     int err = 0;
     int rec = 0;
