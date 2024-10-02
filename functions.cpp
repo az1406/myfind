@@ -17,6 +17,11 @@ using namespace std;
 void printFile(pid_t pID, const string &fileName, const string &absPath) {
     cout << pID << ": " << fileName << ": " << absPath << endl;
 }
+// Gibt aus, wie myfind verwendet werden sollte.
+void printUsage(const string &programName) {
+    cerr << "Usage: " << programName << " [-R] [-i] searchpath filename 1 [filename2] ... [filename n]" << endl;
+    exit(EXIT_FAILURE);
+}
 
 int parseArguments(int argc, char *argv[], int &err, int &rec, int &caseIns) {
     int c;
